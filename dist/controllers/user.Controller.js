@@ -16,14 +16,15 @@ exports.login = exports.createUser = void 0;
 require("dotenv/config");
 const User_1 = __importDefault(require("../models/User"));
 const jwt_1 = require("../libs/jwt");
+const bcrypt_1 = __importDefault(require("bcrypt"));
 const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, email, password } = req.body;
+    const { username, email, password } = req.body;
     try {
         const userFind = yield User_1.default.findOne({ email: email });
         if (userFind)
             return res.status(400).json({ msg: "This email is already used" });
         const newUser = new User_1.default({
-            name,
+            username,
             email,
             password
         });
@@ -32,7 +33,7 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.cookie('_token', token);
         res.json({
             id: user._id,
-            name: user.name,
+            username: user.username,
             email: user.email,
         });
     }
@@ -45,13 +46,23 @@ exports.createUser = createUser;
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     try {
-        const userFound = User_1.default.findOne({ email });
+        const userFound = yield User_1.default.findOne({ email });
         if (!userFound)
-            return res.status(400).json({ error: "User not found" });
-        res.status(200).json(userFound);
+            return res.status(400).json({ message: 'Invalid credentials' });
+        const isMatch = yield bcrypt_1.default.compare(password, userFound.password);
+        if (!isMatch)
+            return res.status(400).json({ message: 'Invalid credentials' });
+        const token = yield (0, jwt_1.createJWT)({ id: userFound._id });
+        res.cookie('_token', token);
+        res.json({
+            id: userFound._id,
+            username: userFound.username,
+            email: userFound.email
+        });
     }
     catch (error) {
-        res.status(400).json({ error });
+        console.error(error);
+        res.status(400).json(error);
     }
 });
 exports.login = login;

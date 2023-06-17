@@ -1,9 +1,9 @@
-import { Schema } from 'mongoose';
+import mongoose from 'mongoose';
 import IUser from '../interfaces/User.interface';
 import bcrypt from 'bcrypt';
 
-const userSchema = new Schema<IUser>({
-  name: { type: String, required: true, trim: true},
+const userSchema: mongoose.Schema<IUser> = new mongoose.Schema({
+  username: { type: String, required: true, trim: true},
   email: { type: String, required: true, trim: true, unique: true},
   password: { type: String, required: true  }
 }, { timestamps: true });
@@ -11,7 +11,6 @@ const userSchema = new Schema<IUser>({
 userSchema.pre('save', function(next) {
   const user = this;
 
-  //? Only hash if it is new (or while modified)
   if(!user.isModified('password')) return next();
 
   //? generate salt
@@ -26,9 +25,5 @@ userSchema.pre('save', function(next) {
     });
   });
 });
-
-userSchema.methods.comparePassword = async function(password: string) {
-  return await bcrypt.compare(password, this.password);
-}
 
 export default userSchema;

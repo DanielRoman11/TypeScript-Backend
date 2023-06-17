@@ -59,3 +59,7 @@ export const login = async(req: Request, res: Response) => {
     res.status(400).json(error);
   }
 }
+
+export const logout = async(req: Request, res: Response) => {
+  
+}

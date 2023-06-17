@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.createUser = void 0;
+exports.logout = exports.login = exports.createUser = void 0;
 require("dotenv/config");
 const User_1 = __importDefault(require("../models/User"));
 const jwt_1 = require("../libs/jwt");
@@ -66,3 +66,6 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.login = login;
+const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+});
+exports.logout = logout;

@@ -1,9 +1,8 @@
 import 'dotenv/config';
 import { Request, Response } from 'express';
 import User from '../models/User';
-import jwt from 'jsonwebtoken';
-import { token } from 'morgan';
 import { createJWT } from '../libs/jwt';
+import bcrypt from 'bcrypt';
 
 export const createUser = async(req: Request, res: Response) =>{
   const { name, email, password } = req.body;
@@ -33,13 +32,18 @@ export const createUser = async(req: Request, res: Response) =>{
   }  
 }
 
-export const login = (req: Request, res: Response) => {
+export const login = async(req: Request, res: Response) => {
   const { email, password } = req.body;
 
-  const user = User.findOne({email: email});
-
-  if(!user) return res.status(400).json({error: "User not found"});
-
-  // if(user.comparePassword(password))
+  try {
+    const userFound = User.findOne({email});
+  
+    if(!userFound) return res.status(400).json({error: "User not found"});
+  
+    res.status(200).json(userFound)
+    
+  } catch (error) {
+    res.status(400).json({error})  
+  }
 }
 

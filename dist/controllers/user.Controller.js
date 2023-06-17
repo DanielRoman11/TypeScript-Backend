@@ -42,11 +42,16 @@ const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.createUser = createUser;
-const login = (req, res) => {
+const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
-    const user = User_1.default.findOne({ email: email });
-    if (!user)
-        return res.status(400).json({ error: "User not found" });
-    // if(user.comparePassword(password))
-};
+    try {
+        const userFound = User_1.default.findOne({ email });
+        if (!userFound)
+            return res.status(400).json({ error: "User not found" });
+        res.status(200).json(userFound);
+    }
+    catch (error) {
+        res.status(400).json({ error });
+    }
+});
 exports.login = login;
